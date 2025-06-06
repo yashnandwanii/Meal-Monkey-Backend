@@ -38,14 +38,10 @@ const createUser = async (req, res) => {
             //phone: req.body.phone,
             otp: otp
         })
-        //console.log("New User Object:", newUser);
-
-        // Save the user to the database
         await newUser.save();
 
         sendEmail(newUser.email, otp);
-
-        return res.status(201).json({ status: true, message: "User created successfully", user: newUser });
+        return res.status(201).json({ status: true, message: "User created successfully"});
     } catch (error) {
         console.error("Error creating user:", error);
         return res.status(500).json({ status: false, message: "Internal server error" });
@@ -90,7 +86,7 @@ const loginUser = async(req,res)=>{
 
         const { password, otp, createdAt, updatedAt, __v, ...others} = user._doc; 
 
-        return res.status(200).json({ ...others, token, status: true, message: "Login successful" });
+        return res.status(200).json({ ...others, token});
     } catch (error) {
         console.error("Error logging in user:", error);
         return res.status(500).json({ status: false, message: "Internal server error" });

@@ -2,6 +2,8 @@ import Food from '../models/food.model.js';
 
 const addFood = async (req, res) => {
     const { title, foodTags, foodType, imageUrl, category, time, code, restaurent, price, description, additives } = req.body;
+    console.log("Request Body:", req.body);
+    
 
     if (!title || !foodTags || !foodType|| !imageUrl || !category || !time || !code || !restaurent || !price || !description  || !additives) {
         return res.status(400).json({ status: false, message: "All fields are required" });
@@ -12,9 +14,12 @@ const addFood = async (req, res) => {
             return res.status(400).json({ status: false, message: "Food with this title already exists" });
         }
 
+
         const newFood = new Food(req.body);
+        console.log("New Food Object:", newFood);
+        
         await newFood.save();
-        res.status(201).json({ status: true, message: "Food added successfully", food: newFood });
+        res.status(201).json(newFood);
     } catch (error) {
         res.status(500).json({ message: "Error adding food", error: error.message });
     }
@@ -136,7 +141,7 @@ const getFoodsByRestaurent = async (req, res) => {
         if (foods.length === 0) {
             return res.status(404).json({ status: false, message: "No foods found for this restaurent" });
         }
-        res.status(200).json({ status: true, foods });
+        res.status(200).json(foods );
     } catch (error) {
         res.status(500).json({ message: "Error fetching foods by restaurent", error: error.message });
     }
@@ -178,7 +183,6 @@ const getRandomFoods = async (req, res) => {
       matchQuery.code = req.params.code;
     }
 
-    
     const totalCount = await Food.countDocuments(matchQuery);
 
     if (totalCount > 0) {
