@@ -8,7 +8,7 @@ import validator from 'validator';
 
 
 const createUser = async (req, res) => {
-    const emailRegex = /^[a-zA-Z0-9._-}+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
     if(!emailRegex.test(req.body.email)) {
         return res.status(400).json({ status:false, message: "Invalid email format" });
@@ -38,10 +38,29 @@ const createUser = async (req, res) => {
             //phone: req.body.phone,
             otp: otp
         })
-        await newUser.save();
+        const savedUser = await newUser.save();
+        console.log("New user created:", savedUser);
 
-        sendEmail(newUser.email, otp);
-        return res.status(201).json({ status: true, message: "User created successfully"});
+        sendEmail(savedUser.email, otp);
+        console.log("OTP sent to email:", savedUser.email);
+        
+        // Create token for the new user
+        const token = jwt.sign(
+            { 
+                id: savedUser._id.toString(),
+                userType: savedUser.userType,
+                email: savedUser.email,
+            }, 
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+        
+        return res.status(201).json({ 
+            status: true, 
+            message: "User created successfully",
+            token: token,
+            id: savedUser._id
+        });
     } catch (error) {
         console.error("Error creating user:", error);
         return res.status(500).json({ status: false, message: "Internal server error" });
@@ -52,20 +71,25 @@ const loginUser = async(req,res)=>{
 
     const email = req.body.email ? req.body.email.trim() : '';
 
+
     if (!validator.isEmail(email)) {
         return res.status(400).json({ status: false, message: "Invalid email format" });
     }
     
     const minPasswordLength = 8;
-    if(req.body.password < minPasswordLength) {
+    if(req.body.password.length < minPasswordLength) {
         return res.status(400).json({ status:false, message: `Password must be at least ${minPasswordLength} characters long` });
     }
 
     try {
-        const user = await User.findOne({email: req.body.email});
+        console.log("Attempting to find user with email:", email);
+        const user = await User.findOne({email: email}); // Use the trimmed email
         if (!user) {
+            console.log("No user found with email:", email);
             return res.status(404).json({ status: false, message: "User not found" });
         }
+        console.log("User found:", user.email);
+
         const hashedPassword = CryptoJS.AES.decrypt(user.password, process.env.PASSWORD_SECRET);
 
         const originalPassword = hashedPassword.toString(CryptoJS.enc.Utf8);
@@ -76,13 +100,15 @@ const loginUser = async(req,res)=>{
 
         const token = jwt.sign(
             { 
-            id: user._id,
-            userType:user.userType,
+            id: user._id.toString(), // Convert ObjectId to string
+            userType: user.userType,
             email: user.email,
             }, 
             process.env.JWT_SECRET,
-            { expiresIn: '21d' }
+            { expiresIn: '1d' }
         );
+
+        
 
         const { password, otp, createdAt, updatedAt, __v, ...others} = user._doc; 
 
@@ -93,8 +119,6 @@ const loginUser = async(req,res)=>{
         
     }
 }
-
-
 
 export default {
     createUser,
