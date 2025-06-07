@@ -8,7 +8,7 @@ router.get('/', verifyTokenAndAuthorization, userController.getUser);
 
 router.delete('/',verifyTokenAndAuthorization, userController.deleteUser);
 router.get('/verify/:otp', verifyToken, userController.verifyUser);
-router.post('/verifyPhone/:phone', userController.verifyPhone);
+router.post('/verifyPhone/:phone', verifyTokenAndAuthorization, userController.verifyPhone);
 
 
 export default router; 

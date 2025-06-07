@@ -55,6 +55,20 @@ const verifyUser = async (req, res) => {
         user.verification = true;
         user.otp = null; // Clear OTP after verification
 
+        // Set default values for new users
+        if (!user.profile) {
+            user.profile = "https://d326nfutv7b1e.cloudfront.net/uploads/default_user.jpg";
+        }
+        if (!user.fcm) {
+            user.fcm = "none";
+        }
+        if (!user.phone) {
+            user.phone = "";
+        }
+        if (!user.phoneVerification) {
+            user.phoneVerification = false;
+        }
+
         console.log("Saving updated user to DB...");
         await user.save();
         console.log("User successfully verified and saved.");
@@ -68,14 +82,23 @@ const verifyUser = async (req, res) => {
             expiresIn: '1d' // Token expiration time
         });
         
-        const { password, __v, otp, createdAt, ...others } = user._doc;
-
-        res.status(200).json({
-            ...others, 
-            token,
+        // Include all required fields in response
+        const response = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            fcm: user.fcm || "none",
+            verification: true,
+            phone: user.phone || "",
+            phoneVerification: user.phoneVerification || false,
+            userType: user.userType,
+            profile: user.profile,
+            token: token,
             status: true,
             message: "User verified successfully"
-        });
+        };
+
+        res.status(200).json(response);
     }
     catch (error) {
         console.error("Error during OTP verification:", error);
