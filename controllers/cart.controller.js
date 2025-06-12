@@ -65,7 +65,6 @@ const deleteProductFromCart = async (req, res) => {
 }
 const getCart = async (req, res) => {
     const userId = req.user.id;
-
     try {
         const cart = await Cart.find({ userId: userId }).populate({
             path: 'productId',

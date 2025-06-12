@@ -52,7 +52,7 @@ const createUser = async (req, res) => {
                 email: savedUser.email,
             }, 
             process.env.JWT_SECRET,
-            { expiresIn: '1d' }
+            { expiresIn: '21d' }
         );
         
         return res.status(201).json({ 

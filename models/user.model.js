@@ -49,7 +49,7 @@ const userSchema = new mongoose.Schema({
     },
     profile:{
         type:String,
-        default:"https://d326nfutv7b1e.cloudfront.net/uploads/edb6a2e4-d94d-4b00-92f0-0c37bca2f39d-vinci_03.jpg",
+        default:"https://images.unsplash.com/photo-1617531653332-bd46c24f2068?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Ym13fGVufDB8fDB8fHww",
     }
 }, {
     timestamps: true,});
