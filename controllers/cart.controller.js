@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 
 const addProductToCart = async (req, res) => {
     const userId = req.user.id;
-    const { productId, additives, quantity } = req.body;
+    const { productId, additives, quantity, totalPrice } = req.body;
 
     if (!productId || !mongoose.Types.ObjectId.isValid(productId)) {
         return res.status(400).json({ message: "Invalid or missing productId" });
@@ -14,7 +14,7 @@ const addProductToCart = async (req, res) => {
 
         if (existingProduct) {
             existingProduct.quantity += quantity;
-            existingProduct.totalPrice = calculateTotalPrice(existingProduct.quantity, existingProduct.additives);
+            existingProduct.totalPrice = totalPrice ?? calculateTotalPrice(existingProduct.quantity, existingProduct.additives);           
             await existingProduct.save();
             return res.status(200).json(existingProduct);
         }
@@ -24,7 +24,7 @@ const addProductToCart = async (req, res) => {
             productId,
             additives,
             quantity,
-            totalPrice: calculateTotalPrice(quantity, additives)
+            totalPrice: totalPrice ?? calculateTotalPrice(quantity, additives)
         });
 
         const savedCart = await newCart.save();
@@ -44,24 +44,21 @@ function calculateTotalPrice(quantity, additives) {
 }
 
 const deleteProductFromCart = async (req, res) => {
+   const cartItemId = req.params.id;
     const userId = req.user.id;
-    const { productId } = req.params;//
-
-    try {
-        const deletedProduct = await Cart.findOneAndDelete({ userId: userId, productId: productId });
-
-        // if (!deletedProduct) {
-        //     return res.status(404).json({ message: 'Product not found in cart' });
-        // }
+    
+     try {
+          const cartItem = await Cart.findByIdAndDelete({ _id: cartItemId });
+    
+          if (!cartItem) {
+                return res.status(404).json({ message: 'Product not found in cart' });
+          }
         const count = await Cart.countDocuments({ userId: userId });
-        if (count === 0) {
-            return res.status(404).json({ message: 'Cart is empty' });
-        }
-
-        res.status(200).json({ message: 'Product removed from cart successfully', count:count });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+          
+          return res.status(200).json({status:true, count });
+     } catch (error) {
+          res.status(500).json({ message: error.message });
+     }
 }
 const getCart = async (req, res) => {
     const userId = req.user.id;
