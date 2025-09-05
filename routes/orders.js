@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/Order'); // Your Mongoose model
+const Order = require('../models/Order').default; // Your Mongoose model
 
 router.post('/save', async (req, res) => {
   try {

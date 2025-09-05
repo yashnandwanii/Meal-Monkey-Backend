@@ -1,7 +1,7 @@
 // models/Order.js
-const mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const orderSchema = new mongoose.Schema({
+const orderSchema = new Schema({
   paymentId: String,
   orderId: String,
   amount: Number,
@@ -17,4 +17,4 @@ const orderSchema = new mongoose.Schema({
   createdAt: Date,
 });
 
-module.exports = mongoose.model('Order', orderSchema);
+export default model('Order', orderSchema);
