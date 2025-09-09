@@ -7,6 +7,17 @@ const restaurentSchema = new mongoose.Schema({
         unique: true,
         trim: true
     },
+    email: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
     time: {
         type: String,
         required: true,
@@ -32,16 +43,16 @@ const restaurentSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    owner:{
-        type:String,
-        required: true,
-    },
-    code:{
+    owner: {
         type: String,
         required: true,
-        
     },
-    logoUrl:{
+    code: {
+        type: String,
+        required: true,
+
+    },
+    logoUrl: {
         type: String,
         required: true
     },
@@ -64,12 +75,12 @@ const restaurentSchema = new mongoose.Schema({
         type: String,
         default: "Your restaurant is under review."
     },
-    coords:{
-        id:{type:String},
-        latitude:{ type: Number, required: true },
-        longitude:{ type: Number, required: true },
-        latitudeDelta:{ type: Number, default: 0.0122 },
-        longitudeDelta:{ type: Number, default: 0.0122 },
+    coords: {
+        id: { type: String },
+        latitude: { type: Number, required: true },
+        longitude: { type: Number, required: true },
+        latitudeDelta: { type: Number, default: 0.0122 },
+        longitudeDelta: { type: Number, default: 0.0122 },
         address: { type: String, required: true },
         title: { type: String, required: true }
     }
