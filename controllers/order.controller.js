@@ -8,6 +8,8 @@ const placeOrder = async(req, res) => {
     try {
         await newOrder.save();
         const orderId = newOrder._id;
+
+        
         res.status(201).json({
             success: true,
             message: "Order placed successfully",

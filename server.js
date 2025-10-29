@@ -10,6 +10,7 @@ import UserRoutes from './routes/user.route.js';
 import AddressRoutes from './routes/address.route.js'; 
 import CartRoutes from './routes/cart.route.js'; 
 import OrderRoutes from './routes/order.route.js';
+import PaymentRoutes from './routes/payment.route.js';
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/rating", RatingRoutes);
 app.use("/api/address", AddressRoutes); 
 app.use("/api/cart", CartRoutes); 
 app.use("/api/orders", OrderRoutes);
+app.use("/api/payment", PaymentRoutes);
 
 
 
